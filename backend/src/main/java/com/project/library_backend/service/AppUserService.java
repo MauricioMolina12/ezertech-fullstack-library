@@ -97,8 +97,11 @@ public class AppUserService {
 
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(user.getPassword());
         existingUser.setRole(user.getRole());
+
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            existingUser.setPassword(user.getPassword());
+        }
 
         return appUserRepository.save(existingUser);
     }
