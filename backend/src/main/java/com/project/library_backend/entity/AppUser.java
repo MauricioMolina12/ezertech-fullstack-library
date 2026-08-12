@@ -37,6 +37,11 @@ public class AppUser {
     @Column(name = "blocked_until")
     private LocalDateTime blockedUntil;
 
+    @Column(name = "late_returns", nullable = false)
+    private Integer lateReturns = 0;
+
+    @Column(name = "late_returns_reset_at")
+    private LocalDateTime lateReturnsResetAt;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -117,5 +122,21 @@ public class AppUser {
 
     public void setBlockedUntil(LocalDateTime blockedUntil) {
         this.blockedUntil = blockedUntil;
+    }
+
+    public Integer getLateReturns() {
+        return lateReturns;
+    }
+
+    public void setLateReturns(Integer lateReturns) {
+        this.lateReturns = lateReturns;
+    }
+
+    public LocalDateTime getLateReturnsResetAt() {
+        return lateReturnsResetAt;
+    }
+
+    public void setLateReturnsResetAt(LocalDateTime lateReturnsResetAt) {
+        this.lateReturnsResetAt = lateReturnsResetAt;
     }
 }

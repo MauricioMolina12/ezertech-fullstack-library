@@ -62,7 +62,7 @@
         </div>
 
         <div class="loan-card__actions">
-          @if (loan.status === LoanStatus.ACTIVE) {
+          @if (loan.status === LoanStatus.ACTIVE || loan.status === LoanStatus.OVERDUE) {
             <button
               mat-flat-button
               color="primary"

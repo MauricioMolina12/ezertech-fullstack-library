@@ -43,13 +43,14 @@ describe('LoansStore', () => {
     expect(service.getLoansByUser).toHaveBeenCalledWith(1);
   });
 
-  it('detects overdue loans (active and dueDate before today)', () => {
+  it('detects overdue loans (OVERDUE status or active with past dueDate)', () => {
     const service = {
       getLoansByUser: vi.fn(() =>
         of([
-          loan(1, { dueDate: '2020-01-01T00:00:00' }), // activo y vencido
+          loan(1, { dueDate: '2020-01-01T00:00:00' }), // activo y vencido por fecha
           loan(2, { status: LoanStatus.RETURNED, dueDate: '2020-01-01T00:00:00' }), // devuelto
           loan(3, { dueDate: '2099-01-01T00:00:00' }), // futuro
+          loan(4, { status: LoanStatus.OVERDUE, dueDate: '2020-01-01T00:00:00' }), // marcado OVERDUE
         ])
       ),
       returnLoan: vi.fn(() => of(loan(1))),
@@ -57,10 +58,11 @@ describe('LoansStore', () => {
     const store = createStore(service);
     store.loadLoans(1);
 
-    expect(store.overdueCount()).toBe(1);
+    expect(store.overdueCount()).toBe(2);
     expect(store.isOverdue(store.loans()[0])).toBe(true);
     expect(store.isOverdue(store.loans()[1])).toBe(false);
     expect(store.isOverdue(store.loans()[2])).toBe(false);
+    expect(store.isOverdue(store.loans()[3])).toBe(true);
   });
 
   it('exposes the error when the request fails', () => {

@@ -63,9 +63,16 @@ export class LoansStore {
       .pipe(map(() => undefined));
   }
 
-  /** Devuelve true si el préstamo sigue activo y su dueDate es anterior a hoy. */
+  /**
+   * Devuelve true si el préstamo está vencido: porque el backend ya lo marcó
+   * como OVERDUE, o porque sigue ACTIVO y su dueDate es anterior a hoy.
+   * La devolución sigue disponible en ambos casos (es cuando se registra el atraso).
+   */
   isOverdue(loan: LoanResponse): boolean {
-    return loan.status === LoanStatus.ACTIVE && isBeforeToday(loan.dueDate);
+    return (
+      loan.status === LoanStatus.OVERDUE ||
+      (loan.status === LoanStatus.ACTIVE && isBeforeToday(loan.dueDate))
+    );
   }
 
   /** Devuelve el libro; recarga el listado en el componente si es necesario. */

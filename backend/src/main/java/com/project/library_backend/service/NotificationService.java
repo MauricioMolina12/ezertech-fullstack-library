@@ -1,7 +1,9 @@
 package com.project.library_backend.service;
 
+import com.project.library_backend.entity.AppUser;
 import com.project.library_backend.entity.Loan;
 import com.project.library_backend.enums.LoanStatus;
+import com.project.library_backend.repository.AppUserRepository;
 import com.project.library_backend.repository.LoanRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,14 +17,17 @@ public class NotificationService {
 
     private final LoanRepository loanRepository;
     private final EmailService emailService;
+    private final AppUserRepository appUserRepository;
 
 
     public NotificationService(
             LoanRepository loanRepository,
-            EmailService emailService
+            EmailService emailService,
+            AppUserRepository appUserRepository
     ) {
         this.loanRepository = loanRepository;
         this.emailService = emailService;
+        this.appUserRepository = appUserRepository;
     }
 
     @Transactional
@@ -36,12 +41,12 @@ public class NotificationService {
 
     private void sendReminders(LocalDateTime now) {
 
-        LocalDateTime tomorrow = now.plusHours(24);
+        LocalDateTime limit = now.plusDays(2);
 
         List<Loan> loans = loanRepository.findByStatusAndDueDateBetween(
-                com.project.library_backend.enums.LoanStatus.ACTIVE,
+                LoanStatus.ACTIVE,
                 now,
-                tomorrow
+                limit
         );
 
         for (Loan loan : loans) {
@@ -69,26 +74,84 @@ public class NotificationService {
                 now
         );
 
-        System.out.println("Préstamos vencidos encontrados: " + loans.size());
-
         for (Loan loan : loans) {
+
+            if (!loan.getDueDate().isBefore(now)) {
+                continue;
+            }
 
             if (loan.getOverdueNoticeSentAt() != null) {
                 System.out.println("Ya enviado");
                 continue;
             }
 
+            var user = loan.getUser();
+
             emailService.send(
-                    loan.getUser().getEmail(),
+                    user.getEmail(),
                     "Préstamo vencido",
-                    "El libro " + loan.getBook().getTitle() + " está vencido"
+                    "El libro "
+                            + loan.getBook().getTitle()
+                            + " está vencido"
             );
 
-            System.out.println("Correo enviado");
+            loan.setStatus(LoanStatus.OVERDUE);
+
+            registerLateReturn(user);
 
             loan.setOverdueNoticeSentAt(now);
+
             loanRepository.save(loan);
         }
+    }
+
+    private void registerLateReturn(AppUser user) {
+
+
+        LocalDateTime now = LocalDateTime.now();
+
+
+        // Si ya pasó la ventana de 90 días
+        if (
+                user.getLateReturnsResetAt() == null ||
+                        user.getLateReturnsResetAt()
+                                .isBefore(now)
+        ) {
+
+            user.setLateReturns(0);
+
+            user.setLateReturnsResetAt(
+                    now.plusDays(90)
+            );
+        }
+
+
+        user.setLateReturns(
+                user.getLateReturns() + 1
+        );
+
+
+        if (user.getLateReturns() >= 3) {
+
+
+            user.setBlockedUntil(
+                    now.plusWeeks(1)
+            );
+
+            emailService.send(
+                    user.getEmail(),
+                    "Cuenta bloqueada",
+                    "Tu cuenta fue bloqueada por alcanzar " + "3 atrasos en los últimos 90 días"
+            );
+
+
+            // reiniciar contador después del bloqueo
+            user.setLateReturns(0);
+            user.setLateReturnsResetAt(null);
+        }
+
+
+        appUserRepository.save(user);
     }
 
     @Scheduled(fixedRate = 60000)

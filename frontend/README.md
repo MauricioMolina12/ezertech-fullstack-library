@@ -173,5 +173,7 @@ Suite unitaria con **Vitest + jsdom** (`vitest.config.ts`). Cubre la lógica de 
 - `/catalog`, `/my-loans`, `/my-reservations` y `/admin` están protegidos por `authGuard`.
 - `/admin` además exige rol `ADMIN` o `LIBRARIAN` (`adminGuard`). El rol se obtiene de
   `GET /api/users/{id}` tras el login.
+- La **devolución sigue disponible para préstamos vencidos** (estado `OVERDUE` o activo con
+  `dueDate < hoy`): al devolver, el backend registra el atraso del usuario y evalúa bloqueos.
 - El backend debe permitir CORS hacia `http://localhost:4200` (o usar un proxy en desarrollo).
 
