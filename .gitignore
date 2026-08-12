@@ -8,9 +8,17 @@ backend/target/
 # Angular
 frontend/node_modules/
 frontend/dist/
+frontend/.angular/
 
 # Environment
 .env
 
 # Spring secrets
 backend/src/main/resources/application.properties
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
