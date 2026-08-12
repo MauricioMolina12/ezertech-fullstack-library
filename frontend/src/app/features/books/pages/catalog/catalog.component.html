@@ -1,0 +1,71 @@
+<app-page-header
+  title="Catálogo de libros"
+  subtitle="Explora, busca y reserva títulos disponibles"
+  icon="menu_book"
+>
+  @if (permissions.can('books.manage')) {
+    <button mat-flat-button color="primary" (click)="goToNewBook()" page-header-actions>
+      <mat-icon fontIcon="add"></mat-icon>
+      Nuevo libro
+    </button>
+  }
+</app-page-header>
+
+<section class="catalog__toolbar">
+  <mat-form-field appearance="outline" class="catalog__search">
+    <mat-icon matPrefix fontIcon="search"></mat-icon>
+    <input
+      matInput
+      #searchInput
+      placeholder="Buscar por título o autor"
+      [value]="store.search()"
+      (input)="onSearch(searchInput.value)"
+    />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="catalog__filter">
+    <mat-label>Estado</mat-label>
+    <mat-select [value]="store.statusFilter()" (selectionChange)="onStatusChange($event.value)">
+      <mat-option [value]="ALL">Todos</mat-option>
+      @for (status of bookStatuses; track status) {
+        <mat-option [value]="status">{{ statusLabel(status) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</section>
+
+@if (store.loading() && store.books().length === 0) {
+  <div class="catalog__grid">
+    @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+      <app-skeleton-card></app-skeleton-card>
+    }
+  </div>
+} @else if (store.error()) {
+  <app-error-message [message]="store.error() ?? 'Error desconocido'" (retry)="store.loadBooks()"></app-error-message>
+} @else if (store.filteredBooks().length === 0) {
+  <app-empty-state
+    [icon]="'search_off'"
+    [title]="'Sin resultados'"
+    [message]="'No se encontraron libros con los criterios actuales. Ajusta la búsqueda o los filtros.'"
+  ></app-empty-state>
+} @else {
+  <div class="catalog__grid">
+    @for (book of store.filteredBooks(); track book.id) {
+      <app-book-card
+        [book]="book"
+        [userReserved]="hasActiveReservation(book)"
+        [userNotified]="isNotified(book)"
+        [canLoan]="permissions.can('books.loan')"
+        [canReserve]="permissions.can('books.reserve')"
+        [canManage]="permissions.can('books.manage')"
+        [loaning]="loaningBookId() === book.id"
+        [reserving]="reservingBookId() === book.id"
+        (loan)="loan($event)"
+        (reserve)="reserve($event)"
+        (viewDetails)="viewDetails($event)"
+        (edit)="goToEdit($event)"
+        (delete)="confirmDeleteBook($event)"
+      ></app-book-card>
+    }
+  </div>
+}

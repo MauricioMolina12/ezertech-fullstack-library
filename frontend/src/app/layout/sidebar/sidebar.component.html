@@ -1,0 +1,30 @@
+<div class="sidebar">
+  <div class="sidebar__brand">
+    <div class="sidebar__logo">
+      <mat-icon fontIcon="auto_stories"></mat-icon>
+    </div>
+    <div class="sidebar__brand-text">
+      <span class="sidebar__brand-name">Biblioteca</span>
+      <span class="sidebar__brand-sub">Digital</span>
+    </div>
+  </div>
+
+  <nav class="sidebar__nav">
+    @for (item of navItems(); track item.route) {
+      <a
+        class="sidebar__link"
+        [routerLink]="item.route"
+        routerLinkActive="sidebar__link--active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions(item)"
+        (click)="onNavigate()"
+      >
+        <mat-icon class="sidebar__link-icon" [fontIcon]="item.icon"></mat-icon>
+        <span class="sidebar__link-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar__footer">
+    <span class="sidebar__footer-text">API · localhost:8080</span>
+  </div>
+</div>

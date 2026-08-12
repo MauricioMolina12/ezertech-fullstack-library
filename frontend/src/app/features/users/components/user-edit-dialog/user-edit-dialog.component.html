@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Editar usuario</h2>
+<mat-dialog-content class="user-edit__content">
+  <form class="user-edit__form" [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <mat-icon matPrefix fontIcon="person_outline"></mat-icon>
+      <input matInput formControlName="name" />
+      @if (form.controls['name'].touched && form.controls['name'].hasError('required')) {
+        <mat-error>El nombre es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Correo electrónico</mat-label>
+      <mat-icon matPrefix fontIcon="mail_outline"></mat-icon>
+      <input matInput formControlName="email" type="email" />
+      @if (form.controls['email'].touched && form.controls['email'].hasError('required')) {
+        <mat-error>El correo es obligatorio</mat-error>
+      } @else if (form.controls['email'].touched && form.controls['email'].hasError('email')) {
+        <mat-error>Ingresa un correo válido</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Rol</mat-label>
+      <mat-icon matPrefix fontIcon="admin_panel_settings"></mat-icon>
+      <mat-select formControlName="role">
+        @for (option of roleOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="save()">
+    <mat-icon fontIcon="save_outlined"></mat-icon>
+    Guardar cambios
+  </button>
+</mat-dialog-actions>

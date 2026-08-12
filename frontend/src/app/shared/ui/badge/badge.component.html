@@ -1,0 +1,6 @@
+<span class="badge" [class]="'badge--' + color()">
+  @if (icon()) {
+    <mat-icon class="badge__icon" [fontIcon]="icon() ?? ''"></mat-icon>
+  }
+  <span class="badge__label">{{ label() }}</span>
+</span>

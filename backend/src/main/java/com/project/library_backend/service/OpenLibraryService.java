@@ -1,7 +1,9 @@
 package com.project.library_backend.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.project.library_backend.dto.book.ExternalBookData;
 import com.project.library_backend.dto.book.OpenLibrarySearchResponse;
+import com.project.library_backend.dto.book.OpenLibraryWorkResponse;
 import io.netty.channel.ChannelOption;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -10,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,8 +42,6 @@ public class OpenLibraryService {
             key = "#isbn"
     )
     public Optional<ExternalBookData> lookupByIsbn(String isbn) {
-
-        System.out.println("LOOKUP ISBN: " + isbn);
 
         try {
 
@@ -75,6 +76,8 @@ public class OpenLibraryService {
 
             OpenLibrarySearchResponse.BookDoc book =
                     response.getDocs().get(0);
+            OpenLibraryWorkResponse work =
+                    getWorkDetails(book.getKey());
 
             String author = null;
 
@@ -89,14 +92,28 @@ public class OpenLibraryService {
                             + isbn
                             + "-L.jpg";
 
+            String genre = null;
+            String descriptionText = null;
+
+            if (work != null) {
+
+                genre = extractGenre(work.getSubjects());
+
+                descriptionText = extractDescription(
+                        work.getDescription()
+                );
+            }
+
             ExternalBookData externalBookData =
                     new ExternalBookData(
                             isbn,
                             book.getTitle(),
                             author,
                             book.getFirstPublishYear(),
+                            genre,
+                            descriptionText,
                             coverUrl
-                    );
+                            );
 
             System.out.println(
                     "Open Library book found: "
@@ -116,5 +133,53 @@ public class OpenLibraryService {
 
             return Optional.empty();
         }
+    }
+
+    private String extractGenre(List<String> subjects) {
+
+        if (subjects == null) {
+            return null;
+        }
+
+        return subjects.stream()
+                .filter(subject ->
+                        subject.equalsIgnoreCase("fiction")
+                                || subject.toLowerCase()
+                                .contains("fantasy")
+                                || subject.toLowerCase()
+                                .contains("romance")
+                                || subject.toLowerCase()
+                                .contains("magic realism")
+                )
+                .findFirst()
+                .orElse(null);
+    }
+
+    private String extractDescription(JsonNode description) {
+
+        if (description == null) {
+            return null;
+        }
+
+        if (description.isTextual()) {
+            return description.asText();
+        }
+
+        if (description.has("value")) {
+            return description.get("value").asText();
+        }
+
+        return null;
+    }
+
+    private OpenLibraryWorkResponse getWorkDetails(String workKey) {
+
+        return webClient
+                .get()
+                .uri(workKey + ".json")
+                .retrieve()
+                .bodyToMono(OpenLibraryWorkResponse.class)
+                .timeout(Duration.ofSeconds(15))
+                .block();
     }
 }

@@ -1,0 +1,10 @@
+<div class="error-message" role="alert">
+  <mat-icon class="error-message__icon" fontIcon="error_outline"></mat-icon>
+  <div class="error-message__body">
+    <p class="error-message__title">Ha ocurrido un error</p>
+    <p class="error-message__detail">{{ message() }}</p>
+  </div>
+  @if (showRetry()) {
+    <button mat-stroked-button class="error-message__retry" (click)="onRetry()">{{ retryLabel() }}</button>
+  }
+</div>

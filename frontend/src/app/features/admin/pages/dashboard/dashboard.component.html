@@ -1,0 +1,186 @@
+<app-page-header
+  title="Dashboard"
+  subtitle="Resumen según tu rol: estadísticas generales, de actividad y accesos rápidos"
+  icon="dashboard"
+></app-page-header>
+
+@if (permissions.can('stats.general')) {
+  <section class="dashboard__section">
+    <h2 class="dashboard__section-title">Estadísticas generales</h2>
+
+    @if (store.loading()) {
+      <div class="dashboard__grid">
+        @for (item of [1, 2, 3, 4, 5, 6, 7]; track item) {
+          <app-skeleton-card></app-skeleton-card>
+        }
+      </div>
+    } @else if (store.error()) {
+      <app-error-message [message]="store.error() ?? 'Error desconocido'" (retry)="store.loadStats()"></app-error-message>
+    } @else if (store.stats()) {
+    <div class="dashboard__grid">
+      @for (card of statCards; track card.key) {
+        <mat-card class="stat-card" appearance="outlined">
+          <div class="stat-card__icon" [style.background]="card.color + '1a'" [style.color]="card.color">
+            <mat-icon [fontIcon]="card.icon"></mat-icon>
+          </div>
+          <div class="stat-card__info">
+            <span class="stat-card__value">{{ valueOf(card.key) }}</span>
+            <span class="stat-card__label">{{ card.label }}</span>
+          </div>
+        </mat-card>
+      }
+    </div>
+
+    <section class="dashboard__summary">
+      <mat-card class="summary-card" appearance="outlined">
+        <div class="summary-card__header">
+          <h3 class="summary-card__title">Inventario por estado</h3>
+          <span class="summary-card__total">{{ totalBooks() }} libros</span>
+        </div>
+
+        <div class="summary-card__row">
+          <div class="summary-card__row-head">
+            <span>Disponibles</span>
+            <span>{{ valueOf('availableBooks') }} · {{ availablePercent() }}%</span>
+          </div>
+          <div class="summary-card__track">
+            <div
+              class="summary-card__fill"
+              [style.width.%]="availablePercent()"
+              [style.background]="'#16a34a'"
+            ></div>
+          </div>
+        </div>
+
+        <div class="summary-card__row">
+          <div class="summary-card__row-head">
+            <span>Prestados</span>
+            <span>{{ valueOf('loanedBooks') }} · {{ loanedPercent() }}%</span>
+          </div>
+          <div class="summary-card__track">
+            <div
+              class="summary-card__fill"
+              [style.width.%]="loanedPercent()"
+              [style.background]="'#2563eb'"
+            ></div>
+          </div>
+        </div>
+
+        <div class="summary-card__row">
+          <div class="summary-card__row-head">
+            <span>Reservados</span>
+            <span>{{ valueOf('reservedBooks') }} · {{ reservedPercent() }}%</span>
+          </div>
+          <div class="summary-card__track">
+            <div
+              class="summary-card__fill"
+              [style.width.%]="reservedPercent()"
+              [style.background]="'#d97706'"
+            ></div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card" appearance="outlined">
+        <div class="summary-card__header">
+          <h3 class="summary-card__title">Estado general</h3>
+        </div>
+
+        <ul class="summary-card__list">
+          <li>
+            <mat-icon fontIcon="group"></mat-icon>
+            Usuarios registrados: <strong>{{ valueOf('totalUsers') }}</strong>
+          </li>
+          <li>
+            <mat-icon fontIcon="local_library"></mat-icon>
+            Préstamos activos: <strong>{{ valueOf('activeLoans') }}</strong>
+          </li>
+          <li>
+            <mat-icon fontIcon="warning_amber"></mat-icon>
+            Préstamos vencidos: <strong>{{ valueOf('overdueLoans') }}</strong>
+          </li>
+        </ul>
+
+        @if (valueOf('overdueLoans') > 0) {
+          <div class="dashboard__alert">
+            <mat-icon fontIcon="warning_amber"></mat-icon>
+            Hay {{ valueOf('overdueLoans') }} préstamo(s) vencido(s) pendientes de devolución.
+          </div>
+        } @else {
+          <div class="dashboard__ok">
+            <mat-icon fontIcon="check_circle"></mat-icon>
+            Sin préstamos vencidos.
+          </div>
+        }
+      </mat-card>
+    </section>
+    } @else {
+      <app-empty-state
+        [icon]="'insights'"
+        [title]="'Sin datos disponibles'"
+        [message]="'No se recibieron estadísticas del servidor.'"
+      ></app-empty-state>
+    }
+  </section>
+}
+
+@if (permissions.can('stats.library')) {
+  <section class="dashboard__section">
+    <h2 class="dashboard__section-title">Estadísticas de actividad</h2>
+
+    @if (usersStore.loading() && !usersStore.stats()) {
+      <div class="dashboard__grid">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <app-skeleton-card></app-skeleton-card>
+        }
+      </div>
+    } @else if (usersStore.error() && !usersStore.stats()) {
+      <app-error-message
+        [message]="usersStore.error() ?? 'Error desconocido'"
+        (retry)="loadActivityStats()"
+      ></app-error-message>
+    } @else if (usersStore.stats()) {
+      <div class="dashboard__grid">
+        @for (card of activityCards; track card.key) {
+          <mat-card class="stat-card" appearance="outlined">
+            <div class="stat-card__icon" [style.background]="card.color + '1a'" [style.color]="card.color">
+              <mat-icon [fontIcon]="card.icon"></mat-icon>
+            </div>
+            <div class="stat-card__info">
+              <span class="stat-card__value">{{ activityValue(card.key) }}</span>
+              <span class="stat-card__label">{{ card.label }}</span>
+            </div>
+          </mat-card>
+        }
+      </div>
+    }
+  </section>
+}
+
+@if (permissions.canAny('users.view', 'books.manage', 'loans.view')) {
+  <section class="dashboard__section">
+    <h2 class="dashboard__section-title">Accesos rápidos</h2>
+
+    <div class="dashboard__quick-grid">
+      @if (permissions.can('users.view')) {
+        <a mat-flat-button color="primary" routerLink="/admin/users">
+          <mat-icon fontIcon="group"></mat-icon>
+          Gestión de usuarios
+        </a>
+      }
+      @if (permissions.can('books.manage')) {
+        <a mat-stroked-button routerLink="/catalog/new">
+          <mat-icon fontIcon="menu_book"></mat-icon>
+          Gestión de libros
+        </a>
+      }
+      @if (permissions.can('loans.view')) {
+        <a mat-stroked-button routerLink="/my-loans">
+          <mat-icon fontIcon="swap_horiz"></mat-icon>
+          Préstamos
+        </a>
+      }
+    </div>
+  </section>
+}
+

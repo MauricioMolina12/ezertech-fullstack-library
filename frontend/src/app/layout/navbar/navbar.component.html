@@ -1,0 +1,31 @@
+<mat-toolbar class="navbar">
+  <div class="navbar__left">
+    <button mat-icon-button class="navbar__menu" aria-label="Abrir menú" (click)="onMenuToggle()">
+      <mat-icon fontIcon="menu"></mat-icon>
+    </button>
+    <span class="navbar__title">{{ pageTitle() }}</span>
+  </div>
+
+  <div class="navbar__right">
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="userMenu"
+      class="navbar__avatar-btn"
+      [attr.aria-label]="'Menú de usuario'"
+    >
+      <span class="navbar__avatar">{{ initials() }}</span>
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="navbar__user-header">
+        <span class="navbar__user-name">{{ user()?.name }}</span>
+        <span class="navbar__user-email">{{ user()?.email }}</span>
+        <span class="navbar__user-role">{{ roleLabel() }}</span>
+      </div>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon fontIcon="logout"></mat-icon>
+        <span>Cerrar sesión</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

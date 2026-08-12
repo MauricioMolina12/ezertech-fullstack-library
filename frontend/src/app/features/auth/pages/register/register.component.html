@@ -1,0 +1,107 @@
+<div class="register">
+  <div class="register__panel">
+    <div class="register__brand">
+      <div class="register__logo">
+        <mat-icon fontIcon="person_add"></mat-icon>
+      </div>
+      <h1 class="register__title">Crear cuenta</h1>
+      <p class="register__subtitle">Regístrate para acceder a la biblioteca digital.</p>
+    </div>
+
+    <form class="register__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre completo</mat-label>
+        <mat-icon matPrefix fontIcon="person_outline"></mat-icon>
+        <input matInput formControlName="name" placeholder="Ana Torres" autocomplete="name" />
+        @if (form.controls['name'].touched && form.controls['name'].hasError('required')) {
+          <mat-error>El nombre es obligatorio</mat-error>
+        } @else if (form.controls['name'].touched && form.controls['name'].hasError('minlength')) {
+          <mat-error>El nombre debe tener al menos 3 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix fontIcon="mail_outline"></mat-icon>
+        <input matInput formControlName="email" type="email" placeholder="tucorreo@biblioteca.com" autocomplete="email" />
+        @if (form.controls['email'].touched && form.controls['email'].hasError('required')) {
+          <mat-error>El correo es obligatorio</mat-error>
+        } @else if (form.controls['email'].touched && form.controls['email'].hasError('email')) {
+          <mat-error>Ingresa un correo válido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <mat-icon matPrefix fontIcon="lock_outline"></mat-icon>
+        <input
+          matInput
+          [type]="hidePassword() ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="new-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+        >
+          <mat-icon [fontIcon]="hidePassword() ? 'visibility_off' : 'visibility'"></mat-icon>
+        </button>
+        @if (form.controls['password'].touched && form.controls['password'].hasError('required')) {
+          <mat-error>La contraseña es obligatoria</mat-error>
+        } @else if (form.controls['password'].touched && form.controls['password'].hasError('minlength')) {
+          <mat-error>La contraseña debe tener al menos 6 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmar contraseña</mat-label>
+        <mat-icon matPrefix fontIcon="lock_outline"></mat-icon>
+        <input
+          matInput
+          [type]="hideConfirmPassword() ? 'password' : 'text'"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+          [attr.aria-label]="hideConfirmPassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+        >
+          <mat-icon [fontIcon]="hideConfirmPassword() ? 'visibility_off' : 'visibility'"></mat-icon>
+        </button>
+        @if (form.controls['confirmPassword'].touched && form.controls['confirmPassword'].hasError('required')) {
+          <mat-error>Confirma la contraseña</mat-error>
+        }
+      </mat-form-field>
+
+      @if (form.touched && form.hasError('passwordsMismatch')) {
+        <p class="register__mismatch">Las contraseñas no coinciden</p>
+      }
+
+      @if (error()) {
+        <app-error-message [message]="error() ?? 'Error inesperado'" [showRetry]="false"></app-error-message>
+      }
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="register__submit"
+        type="submit"
+        [disabled]="form.invalid || loading()"
+      >
+        <mat-icon [fontIcon]="loading() ? 'hourglass_top' : 'person_add'"></mat-icon>
+        <span>{{ loading() ? 'Creando cuenta…' : 'Crear cuenta' }}</span>
+      </button>
+    </form>
+
+    <p class="register__footer">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login" class="register__link">Inicia sesión</a>
+    </p>
+  </div>
+</div>

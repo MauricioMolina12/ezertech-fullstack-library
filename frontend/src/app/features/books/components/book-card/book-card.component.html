@@ -1,0 +1,115 @@
+<article
+  class="book-card"
+  [class.book-card--available]="book().status === BookStatus.AVAILABLE"
+  [class.book-card--loaned]="book().status === BookStatus.LOANED"
+  [class.book-card--reserved]="book().status === BookStatus.RESERVED"
+>
+  <div class="book-card__cover">
+    @if (book().coverUrl && !coverFailed()) {
+      <img
+        class="book-card__image"
+        [src]="book().coverUrl"
+        [alt]="'Portada de ' + book().title"
+        loading="lazy"
+        (error)="onCoverError()"
+      />
+    } @else {
+      <div class="book-card__placeholder">
+        <i class="ti ti-book" aria-hidden="true"></i>
+        <span>Sin portada</span>
+      </div>
+    }
+    <div class="book-card__overlay" aria-hidden="true"></div>
+    <div class="book-card__status">
+      <app-book-status-badge [status]="book().status"></app-book-status-badge>
+    </div>
+  </div>
+
+  <div class="book-card__body">
+    <h3 class="book-card__title" [title]="book().title">{{ book().title }}</h3>
+    <p class="book-card__author">{{ book().author }}</p>
+
+    <div class="book-card__meta">
+      <span class="book-card__badge">
+        <i class="ti ti-tag" aria-hidden="true"></i>
+        {{ book().genre }}
+      </span>
+      <span class="book-card__badge">
+        <i class="ti ti-calendar" aria-hidden="true"></i>
+        {{ book().publicationYear }}
+      </span>
+      <span class="book-card__badge book-card__badge--isbn">
+        <i class="ti ti-barcode" aria-hidden="true"></i>
+        {{ book().isbn }}
+      </span>
+    </div>
+  </div>
+
+  <div class="book-card__actions">
+    <div class="book-card__actions-main">
+      @if (userReserved()) {
+        <span class="book-card__reserved" [class.book-card__reserved--notified]="userNotified()">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          {{ userNotified() ? 'Libro disponible para ti' : 'Reserva realizada' }}
+        </span>
+      } @else if (book().status === BookStatus.AVAILABLE && canLoan()) {
+        <button
+          class="book-card__btn book-card__btn--primary"
+          [disabled]="loaning()"
+          (click)="onLoan()"
+          [attr.aria-label]="'Solicitar préstamo de ' + book().title"
+        >
+          <i class="ti ti-book-upload" aria-hidden="true"></i>
+          Prestar
+        </button>
+      } @else if (
+        (book().status === BookStatus.LOANED || book().status === BookStatus.RESERVED) &&
+        canReserve()
+      ) {
+        <button
+          class="book-card__btn"
+          [disabled]="reserving()"
+          (click)="onReserve()"
+          [attr.aria-label]="'Reservar ' + book().title"
+        >
+          <i class="ti ti-bookmark-plus" aria-hidden="true"></i>
+          {{ book().status === BookStatus.RESERVED ? 'Unirse a la cola' : 'Reservar' }}
+        </button>
+        @if (book().status === BookStatus.RESERVED) {
+          <span class="book-card__queue">
+            <i class="ti ti-users" aria-hidden="true"></i>
+            En cola
+          </span>
+        }
+      }
+    </div>
+
+    <div class="book-card__actions-tools">
+      <button
+        class="book-card__btn book-card__btn--ghost"
+        (click)="onViewDetails()"
+        [attr.aria-label]="'Ver detalles de ' + book().title"
+      >
+        <i class="ti ti-eye" aria-hidden="true"></i>
+        Detalles
+      </button>
+
+      @if (canManage()) {
+        <button
+          class="book-card__icon-btn"
+          (click)="onEdit()"
+          [attr.aria-label]="'Editar libro ' + book().title"
+        >
+          <i class="ti ti-edit" aria-hidden="true"></i>
+        </button>
+        <button
+          class="book-card__icon-btn book-card__icon-btn--danger"
+          (click)="onDelete()"
+          [attr.aria-label]="'Eliminar libro ' + book().title"
+        >
+          <i class="ti ti-trash" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+  </div>
+</article>

@@ -1,0 +1,17 @@
+<mat-sidenav-container class="layout">
+  <mat-sidenav
+    class="layout__sidenav"
+    [mode]="desktop() ? 'side' : 'over'"
+    [opened]="desktop() || sidenavOpened()"
+    (closedStart)="sidenavOpened.set(false)"
+  >
+    <app-sidebar (navigate)="sidenavOpened.set(false)"></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="layout__content">
+    <app-navbar (menuToggle)="onMenuToggle()"></app-navbar>
+    <main class="layout__main">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

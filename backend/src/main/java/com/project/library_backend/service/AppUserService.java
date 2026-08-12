@@ -1,5 +1,6 @@
 package com.project.library_backend.service;
 
+import com.project.library_backend.dto.user.UserResponse;
 import com.project.library_backend.entity.AppUser;
 import com.project.library_backend.exception.DuplicateEmailException;
 import com.project.library_backend.exception.UserNotFoundException;
@@ -38,6 +39,23 @@ public class AppUserService {
                 );
     }
 
+    public UserResponse findByIdResponse(Long id) {
+
+        AppUser user = appUserRepository.findById(id)
+                .orElseThrow(() ->
+                        new UserNotFoundException(
+                                "User with id " + id + " not found"
+                        )
+                );
+
+        return new UserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
+    }
+
     public AppUser findByEmail(String email) {
 
         return appUserRepository.findByEmail(email)
@@ -50,6 +68,19 @@ public class AppUserService {
 
     public List<AppUser> findAll() {
         return appUserRepository.findAll();
+    }
+
+    public List<UserResponse> findAllResponse() {
+
+        return appUserRepository.findAll()
+                .stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getRole()
+                ))
+                .toList();
     }
 
     public AppUser update(Long id, AppUser user) {

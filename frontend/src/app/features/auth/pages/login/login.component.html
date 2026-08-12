@@ -1,0 +1,73 @@
+<div class="login">
+  <div class="login__panel">
+    <div class="login__brand">
+      <div class="login__logo">
+        <mat-icon fontIcon="auto_stories"></mat-icon>
+      </div>
+      <h1 class="login__title">Biblioteca Digital</h1>
+      <p class="login__subtitle">Accede con tu cuenta para gestionar libros, préstamos y reservas.</p>
+    </div>
+
+    <form class="login__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix fontIcon="mail_outline"></mat-icon>
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          placeholder="tucorreo@biblioteca.com"
+          autocomplete="email"
+        />
+        @if (form.controls['email'].touched && form.controls['email'].hasError('required')) {
+          <mat-error>El correo es obligatorio</mat-error>
+        } @else if (form.controls['email'].touched && form.controls['email'].hasError('email')) {
+          <mat-error>Ingresa un correo válido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <mat-icon matPrefix fontIcon="lock_outline"></mat-icon>
+        <input
+          matInput
+          [type]="hidePassword() ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+        >
+          <mat-icon [fontIcon]="hidePassword() ? 'visibility_off' : 'visibility'"></mat-icon>
+        </button>
+        @if (form.controls['password'].touched && form.controls['password'].hasError('required')) {
+          <mat-error>La contraseña es obligatoria</mat-error>
+        }
+      </mat-form-field>
+
+      @if (error()) {
+        <app-error-message [message]="error() ?? 'Error inesperado'" [showRetry]="false"></app-error-message>
+      }
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="login__submit"
+        type="submit"
+        [disabled]="form.invalid || loading()"
+      >
+        <mat-icon [fontIcon]="loading() ? 'hourglass_top' : 'login'"></mat-icon>
+        <span>{{ loading() ? 'Iniciando sesión…' : 'Iniciar sesión' }}</span>
+      </button>
+    </form>
+
+    <p class="login__footer">
+      ¿No tienes cuenta?
+      <a routerLink="/register" class="login__link">Crear una cuenta</a>
+    </p>
+  </div>
+</div>

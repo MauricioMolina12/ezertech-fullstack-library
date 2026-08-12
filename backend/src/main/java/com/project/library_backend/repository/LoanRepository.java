@@ -30,4 +30,13 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
             LocalDateTime start,
             LocalDateTime end
     );
+
+    long countByStatus(LoanStatus status);
+
+    long countByUserId(Long userId);
+
+    long countByUserIdAndStatus(
+            Long userId,
+            LoanStatus status
+    );
 }

@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Solicitar préstamo</h2>
+<mat-dialog-content class="loan-dialog__content">
+  <p class="loan-dialog__book">{{ data.bookTitle }}</p>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Fecha de vencimiento</mat-label>
+    <input matInput [matDatepicker]="picker" [formControl]="dueDateControl" [min]="today" />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    @if (dueDateControl.invalid && dueDateControl.touched) {
+      <mat-error>Selecciona una fecha de vencimiento</mat-error>
+    }
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="confirm()">
+    <mat-icon fontIcon="swap_horiz"></mat-icon>
+    Confirmar préstamo
+  </button>
+</mat-dialog-actions>

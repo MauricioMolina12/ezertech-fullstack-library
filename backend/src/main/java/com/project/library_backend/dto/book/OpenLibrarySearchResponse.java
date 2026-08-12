@@ -18,6 +18,8 @@ public class OpenLibrarySearchResponse {
 
     public static class BookDoc {
 
+        private String key;
+
         private String title;
 
         @JsonProperty("author_name")
@@ -25,6 +27,16 @@ public class OpenLibrarySearchResponse {
 
         @JsonProperty("first_publish_year")
         private Integer firstPublishYear;
+
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
 
         public String getTitle() {
             return title;
@@ -34,6 +46,7 @@ public class OpenLibrarySearchResponse {
             this.title = title;
         }
 
+
         public List<String> getAuthorName() {
             return authorName;
         }
@@ -41,6 +54,7 @@ public class OpenLibrarySearchResponse {
         public void setAuthorName(List<String> authorName) {
             this.authorName = authorName;
         }
+
 
         public Integer getFirstPublishYear() {
             return firstPublishYear;

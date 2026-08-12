@@ -1,0 +1,56 @@
+<app-page-header
+  title="Mis reservas"
+  subtitle="Gestiona las reservas de libros que has solicitado"
+  icon="bookmark"
+></app-page-header>
+
+@if (store.loading()) {
+  <div class="reservations__list">
+    @for (item of [1, 2, 3]; track item) {
+      <div class="reservation-skeleton"></div>
+    }
+  </div>
+} @else if (store.error()) {
+  <app-error-message [message]="store.error() ?? 'Error desconocido'" (retry)="reload()"></app-error-message>
+} @else if (store.reservations().length === 0) {
+  <app-empty-state
+    [icon]="'bookmark_border'"
+    [title]="'No tienes reservas'"
+    [message]="'Puedes reservar un libro disponible directamente desde el catálogo.'"
+  ></app-empty-state>
+} @else {
+  <div class="reservations__list">
+    @for (reservation of store.reservations(); track reservation.id) {
+      <mat-card class="reservation-card" appearance="outlined">
+        <div class="reservation-card__book">
+          <div class="reservation-card__cover">
+            @if (bookMap()[reservation.bookId]?.coverUrl) {
+              <img [src]="bookMap()[reservation.bookId]?.coverUrl" [alt]="bookTitle(reservation)" loading="lazy" />
+            } @else {
+              <mat-icon fontIcon="auto_stories"></mat-icon>
+            }
+          </div>
+          <div class="reservation-card__book-info">
+            <h3 class="reservation-card__title">{{ bookTitle(reservation) }}</h3>
+            <p class="reservation-card__subtitle">Reserva #{{ reservation.id }}</p>
+            <app-reservation-status-badge [status]="reservation.status"></app-reservation-status-badge>
+          </div>
+        </div>
+
+        <div class="reservation-card__date">
+          <span class="reservation-card__date-label">Fecha de reserva</span>
+          <span class="reservation-card__date-value">{{ formatDate(reservation.reservedAt) }}</span>
+        </div>
+
+        <div class="reservation-card__actions">
+          @if (reservation.status === ReservationStatus.PENDING || reservation.status === ReservationStatus.NOTIFIED) {
+            <button mat-stroked-button color="warn" (click)="confirmCancel(reservation)">
+              <mat-icon fontIcon="close"></mat-icon>
+              Cancelar
+            </button>
+          }
+        </div>
+      </mat-card>
+    }
+  </div>
+}

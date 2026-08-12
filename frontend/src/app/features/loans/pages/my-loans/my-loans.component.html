@@ -1,0 +1,80 @@
+<app-page-header
+  title="Mis préstamos"
+  subtitle="Consulta los libros que tienes en préstamo y sus fechas de vencimiento"
+  icon="swap_horiz"
+></app-page-header>
+
+@if (store.loading()) {
+  <div class="loans__list">
+    @for (item of [1, 2, 3]; track item) {
+      <div class="loan-skeleton"></div>
+    }
+  </div>
+} @else if (store.error()) {
+  <app-error-message [message]="store.error() ?? 'Error desconocido'" (retry)="reload()"></app-error-message>
+} @else if (store.loans().length === 0) {
+  <app-empty-state
+    [icon]="'bookmark_border'"
+    [title]="'No tienes préstamos'"
+    [message]="'Cuando solicites el préstamo de un libro, aparecerá aquí con sus fechas y estado.'"
+  ></app-empty-state>
+} @else {
+  <div class="loans__list">
+    @for (loan of store.loans(); track loan.id) {
+      <mat-card class="loan-card" appearance="outlined">
+        <div class="loan-card__book">
+          <div class="loan-card__cover">
+            @if (bookMap()[loan.bookId]?.coverUrl) {
+              <img [src]="bookMap()[loan.bookId]?.coverUrl" [alt]="bookTitle(loan)" loading="lazy" />
+            } @else {
+              <mat-icon fontIcon="auto_stories"></mat-icon>
+            }
+          </div>
+          <div class="loan-card__book-info">
+            <h3 class="loan-card__title">{{ bookTitle(loan) }}</h3>
+            <p class="loan-card__subtitle">Préstamo #{{ loan.id }}</p>
+            <div class="loan-card__badges">
+              <app-loan-status-badge [status]="loan.status"></app-loan-status-badge>
+              @if (isOverdue(loan)) {
+                <app-badge label="Vencido" color="danger" icon="warning"></app-badge>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="loan-card__dates">
+          <div class="loan-card__date">
+            <span class="loan-card__date-label">Fecha préstamo</span>
+            <span class="loan-card__date-value">{{ formatDate(loan.loanDate) }}</span>
+          </div>
+          <div class="loan-card__date">
+            <span class="loan-card__date-label">Fecha vencimiento</span>
+            <span class="loan-card__date-value" [class.loan-card__date-value--overdue]="isOverdue(loan)">
+              {{ formatDate(loan.dueDate) }}
+            </span>
+          </div>
+          @if (loan.returnDate) {
+            <div class="loan-card__date">
+              <span class="loan-card__date-label">Devolución</span>
+              <span class="loan-card__date-value">{{ formatDate(loan.returnDate) }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="loan-card__actions">
+          @if (loan.status === LoanStatus.ACTIVE) {
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="store.returningId() === loan.id"
+              (click)="confirmReturn(loan)"
+            >
+              <mat-icon fontIcon="undo"></mat-icon>
+              Devolver
+            </button>
+          }
+        </div>
+      </mat-card>
+    }
+  </div>
+}

@@ -1,0 +1,24 @@
+.layout {
+  height: 100vh;
+
+  &__sidenav {
+    border-right: 1px solid rgba(148, 163, 184, 0.2);
+    background: var(--sidebar-bg);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__main {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background: var(--color-bg);
+
+    @media (max-width: 640px) {
+      padding: 1.25rem;
+    }
+  }
+}

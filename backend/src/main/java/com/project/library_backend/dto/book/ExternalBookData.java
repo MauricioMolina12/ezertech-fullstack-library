@@ -5,6 +5,8 @@ public record ExternalBookData(
         String title,
         String author,
         Integer year,
+        String genre,
+        String description,
         String coverUrl
 ) {
 }

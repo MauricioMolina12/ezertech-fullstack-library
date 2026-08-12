@@ -1,0 +1,47 @@
+<div class="book-detail">
+  <div class="book-detail__cover">
+    @if (book.coverUrl && !coverFailed()) {
+      <img [src]="book.coverUrl" [alt]="'Portada de ' + book.title" (error)="onCoverError()" />
+    } @else {
+      <div class="book-detail__placeholder">
+        <i class="ti ti-book" aria-hidden="true"></i>
+      </div>
+    }
+  </div>
+
+  <div class="book-detail__info">
+    <div class="book-detail__status">
+      <app-book-status-badge [status]="book.status"></app-book-status-badge>
+    </div>
+
+    <h2 class="book-detail__title">{{ book.title }}</h2>
+    <p class="book-detail__author">{{ book.author }}</p>
+
+    <dl class="book-detail__list">
+      <div class="book-detail__row">
+        <dt>ISBN</dt>
+        <dd>{{ book.isbn }}</dd>
+      </div>
+      <div class="book-detail__row">
+        <dt>Género</dt>
+        <dd>{{ book.genre }}</dd>
+      </div>
+      <div class="book-detail__row">
+        <dt>Año de publicación</dt>
+        <dd>{{ book.publicationYear }}</dd>
+      </div>
+      <div class="book-detail__row">
+        <dt>Registrado</dt>
+        <dd>{{ formatDate(book.createdAt) }}</dd>
+      </div>
+      <div class="book-detail__row">
+        <dt>Actualizado</dt>
+        <dd>{{ formatDate(book.updatedAt) }}</dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Cerrar</button>
+</mat-dialog-actions>

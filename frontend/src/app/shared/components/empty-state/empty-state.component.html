@@ -1,0 +1,12 @@
+<div class="empty-state">
+  <div class="empty-state__icon">
+    <mat-icon [fontIcon]="icon()"></mat-icon>
+  </div>
+  <h3 class="empty-state__title">{{ title() }}</h3>
+  @if (message()) {
+    <p class="empty-state__message">{{ message() }}</p>
+  }
+  @if (actionLabel()) {
+    <button mat-flat-button color="primary" (click)="onAction()">{{ actionLabel() }}</button>
+  }
+</div>
