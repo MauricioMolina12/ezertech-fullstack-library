@@ -55,10 +55,13 @@ public class NotificationService {
                 continue;
             }
 
-            System.out.println(
-                    "REMINDER: El préstamo " + loan.getId()
-                            + " del usuario " + loan.getUser().getEmail()
-                            + " vence el " + loan.getDueDate()
+            emailService.send(
+                    loan.getUser().getEmail(),
+                    "Recordatorio de devolución",
+                    "El libro "
+                            + loan.getBook().getTitle()
+                            + " debe ser devuelto antes del "
+                            + loan.getDueDate()
             );
 
             loan.setReminderSentAt(now);
@@ -145,7 +148,6 @@ public class NotificationService {
             );
 
 
-            // reiniciar contador después del bloqueo
             user.setLateReturns(0);
             user.setLateReturnsResetAt(null);
         }
