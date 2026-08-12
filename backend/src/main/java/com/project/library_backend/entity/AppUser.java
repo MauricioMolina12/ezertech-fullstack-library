@@ -42,6 +42,7 @@ public class AppUser {
 
     @Column(name = "late_returns_reset_at")
     private LocalDateTime lateReturnsResetAt;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

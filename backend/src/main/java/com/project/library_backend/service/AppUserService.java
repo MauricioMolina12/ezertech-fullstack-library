@@ -72,7 +72,7 @@ public class AppUserService {
 
     public List<UserResponse> findAllResponse() {
 
-        return appUserRepository.findAll()
+        return findAll()
                 .stream()
                 .map(user -> new UserResponse(
                         user.getId(),
