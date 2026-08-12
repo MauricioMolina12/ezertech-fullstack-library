@@ -157,12 +157,12 @@
   </section>
 }
 
-@if (permissions.canAny('users.view', 'books.manage', 'loans.view')) {
+@if (permissions.canAny('users.manage', 'books.manage', 'loans.view')) {
   <section class="dashboard__section">
     <h2 class="dashboard__section-title">Accesos rápidos</h2>
 
     <div class="dashboard__quick-grid">
-      @if (permissions.can('users.view')) {
+      @if (permissions.can('users.manage')) {
         <a mat-flat-button color="primary" routerLink="/admin/users">
           <mat-icon fontIcon="group"></mat-icon>
           Gestión de usuarios

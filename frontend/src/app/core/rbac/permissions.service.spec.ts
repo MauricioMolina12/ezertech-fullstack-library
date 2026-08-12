@@ -30,9 +30,8 @@ describe('PermissionsService', () => {
     expect(service.can('books.loan')).toBe(true);
     expect(service.can('books.reserve')).toBe(true);
     expect(service.can('loans.view')).toBe(true);
-    expect(service.can('users.view')).toBe(true);
-    expect(service.can('books.manage')).toBe(false);
     expect(service.can('users.manage')).toBe(false);
+    expect(service.can('books.manage')).toBe(false);
     expect(service.can('stats.general')).toBe(false);
   });
 
@@ -51,9 +50,10 @@ describe('PermissionsService', () => {
 
   it('exposes the granted permission list', () => {
     const service = createPermissions(Role.LIBRARIAN);
-    expect(service.permissions()).toContain('books.manage');
+    expect(service.permissions()).toContain('books.loan');
     expect(service.permissions()).toContain('loans.view');
     expect(service.permissions()).not.toContain('users.manage');
+    expect(service.permissions()).not.toContain('books.manage');
     expect(service.permissions()).not.toContain('stats.general');
   });
 });

@@ -15,10 +15,8 @@ export const PERMISSIONS = {
   'stats.general': [Role.ADMIN],
   /** Estadísticas de actividad del usuario (GET /api/users/{id}/stats). */
   'stats.library': [Role.ADMIN, Role.LIBRARIAN],
-  /** Gestión de usuarios (opción administrativa sensible). */
+  /** Gestión de usuarios (solo ADMIN). */
   'users.manage': [Role.ADMIN],
-  /** Visualizar el listado de usuarios (solo lectura para LIBRARIAN). */
-  'users.view': [Role.ADMIN, Role.LIBRARIAN],
   /** Crear/editar libros: SOLO ADMIN. */
   'books.manage': [Role.ADMIN],
   /** Prestar libros (crear préstamo). */

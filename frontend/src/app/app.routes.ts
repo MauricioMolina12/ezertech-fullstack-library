@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 
-import { permissionGuard } from './core/guards/role.guard';
+import { permissionGuard, roleGuard } from './core/guards/role.guard';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { Role } from './shared/enums/role.enum';
 import { AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
@@ -47,7 +48,7 @@ export const routes: Routes = [
       {
         path: 'admin/users',
         component: UserManagementComponent,
-        canActivate: [permissionGuard('users.view')],
+        canActivate: [roleGuard(Role.ADMIN)],
         data: { title: 'Gestión de usuarios' },
       },
     ],

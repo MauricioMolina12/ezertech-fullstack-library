@@ -40,7 +40,7 @@ export class SidebarComponent {
 
     items.push({ label: 'Mis reservas', icon: 'bookmark', route: '/my-reservations' });
 
-    if (this.permissions.can('users.view')) {
+    if (this.permissions.can('users.manage')) {
       items.push({ label: 'Usuarios', icon: 'group', route: '/admin/users', exact: true });
     }
 

@@ -58,9 +58,9 @@ La autorización se resuelve en un solo lugar, sin validaciones de rol dispersas
 > escalable: asignar LIBRARIAN a los auto-registros e ignorar cualquier `ADMIN`
 > recibido del cliente. La elevación de rol solo la hace un ADMIN.
 
-**Gestión de usuarios** (`/admin/users`): acceso con `users.view` (ADMIN y
-LIBRARIAN en modo lectura). Editar/eliminar exige `users.manage` (solo ADMIN);
-los botones de acción se ocultan para LIBRARIAN.
+**Gestión de usuarios** (`/admin/users`): **solo ADMIN** (guard `roleGuard(Role.ADMIN)` /
+permiso `users.manage`). Un LIBRARIAN o usuario no autenticado es redirigido a `/catalog`
+y el enlace del menú no se muestra (validación del guard aunque se escriba la URL a mano).
 
 Ejemplos de uso:
 
