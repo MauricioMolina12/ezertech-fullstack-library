@@ -12,14 +12,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-
   mailhog:
     image: mailhog/mailhog
     container_name: library-mailhog
     ports:
       - "1025:1025"
       - "8025:8025"
-
 
   backend:
     build:
@@ -31,6 +29,14 @@ services:
       - postgres
       - mailhog
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: library-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
