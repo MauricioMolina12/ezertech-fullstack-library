@@ -1,0 +1,16 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+backend/target/
+
+# Angular
+frontend/node_modules/
+frontend/dist/
+
+# Environment
+.env
+
+# Spring secrets
+backend/src/main/resources/application.properties
